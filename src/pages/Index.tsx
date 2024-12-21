@@ -3,15 +3,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, Lock, Search, FileUp } from "lucide-react";
+import { Upload, Lock, Search, FileUp, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [password, setPassword] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,12 +27,27 @@ const Index = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out",
+      description: "Successfully signed out",
+    });
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          stego<span className="text-primary">X</span>
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">
+            stego<span className="text-primary">X</span>
+          </h1>
+          <Button variant="outline" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
 
         <Tabs defaultValue="encode" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
