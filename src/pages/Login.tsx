@@ -19,6 +19,12 @@ const Login = () => {
         });
         navigate("/");
       }
+      if (event === "SIGNED_OUT") {
+        toast({
+          title: "Signed out",
+          description: "Successfully signed out",
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -37,6 +43,12 @@ const Login = () => {
         </div>
         
         <div className="bg-card p-6 rounded-lg shadow-lg">
+          <div className="mb-4 text-sm text-muted-foreground">
+            <p>Password requirements:</p>
+            <ul className="list-disc list-inside">
+              <li>Minimum 6 characters</li>
+            </ul>
+          </div>
           <Auth
             supabaseClient={supabase}
             appearance={{
