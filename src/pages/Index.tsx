@@ -1,11 +1,171 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Upload, Lock, Search, FileUp } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [message, setMessage] = useState("");
+  const [password, setPassword] = useState("");
+  const { toast } = useToast();
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      toast({
+        title: "Image uploaded",
+        description: `Selected: ${file.name}`,
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <h1 className="text-4xl font-bold text-center mb-8">
+          stego<span className="text-primary">X</span>
+        </h1>
+
+        <Tabs defaultValue="encode" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="encode">Encode</TabsTrigger>
+            <TabsTrigger value="decode">Decode</TabsTrigger>
+            <TabsTrigger value="search">Search</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="encode">
+            <Card>
+              <CardContent className="space-y-4 pt-6">
+                <div className="space-y-2">
+                  <Label htmlFor="upload-image">Upload Image</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="upload-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      onClick={() => document.getElementById("upload-image")?.click()}
+                      className="w-full"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Select Image
+                    </Button>
+                  </div>
+                  {selectedImage && (
+                    <p className="text-sm text-muted-foreground">
+                      Selected: {selectedImage.name}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message">Secret Message</Label>
+                  <Input
+                    id="message"
+                    placeholder="Enter your secret message"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <Button className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Encode Message
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="decode">
+            <Card>
+              <CardContent className="space-y-4 pt-6">
+                <div className="space-y-2">
+                  <Label htmlFor="decode-image">Upload Image</Label>
+                  <div className="flex items-center gap-4">
+                    <Input
+                      id="decode-image"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <Button
+                      onClick={() => document.getElementById("decode-image")?.click()}
+                      className="w-full"
+                    >
+                      <FileUp className="mr-2 h-4 w-4" />
+                      Select Image to Decode
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="decode-password">Password</Label>
+                  <Input
+                    id="decode-password"
+                    type="password"
+                    placeholder="Enter password to decode"
+                  />
+                </div>
+
+                <Button className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Decode Message
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="search">
+            <Card>
+              <CardContent className="space-y-4 pt-6">
+                <div className="space-y-2">
+                  <Label htmlFor="search-key">Unique Key</Label>
+                  <Input
+                    id="search-key"
+                    placeholder="Enter the unique key"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="search-password">Password</Label>
+                  <Input
+                    id="search-password"
+                    type="password"
+                    placeholder="Enter password"
+                  />
+                </div>
+
+                <Button className="w-full">
+                  <Search className="mr-2 h-4 w-4" />
+                  Search
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <footer className="text-center text-sm text-muted-foreground mt-8">
+          © {new Date().getFullYear()} stegoX. All rights reserved.
+        </footer>
       </div>
     </div>
   );
