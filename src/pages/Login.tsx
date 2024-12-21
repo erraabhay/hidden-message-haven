@@ -25,6 +25,9 @@ const Login = () => {
           description: "Successfully signed out",
         });
       }
+      if (event === "USER_UPDATED") {
+        console.log("User was updated:", session);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -44,9 +47,11 @@ const Login = () => {
         
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <div className="mb-4 text-sm text-muted-foreground">
-            <p>Password requirements:</p>
-            <ul className="list-disc list-inside">
-              <li>Minimum 6 characters</li>
+            <p>Important notes:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Password must be at least 6 characters</li>
+              <li>Use a valid email format</li>
+              <li>If you're new, please sign up first</li>
             </ul>
           </div>
           <Auth
@@ -63,6 +68,14 @@ const Login = () => {
               },
             }}
             providers={[]}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              toast({
+                title: "Authentication Error",
+                description: error.message,
+                variant: "destructive",
+              });
+            }}
           />
         </div>
       </div>
