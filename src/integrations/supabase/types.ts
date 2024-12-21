@@ -30,6 +30,45 @@ export type Database = {
         }
         Relationships: []
       }
+      stego_data: {
+        Row: {
+          created_at: string
+          encoded_image_path: string
+          file_name: string
+          file_size: number
+          id: string
+          message: string
+          original_image_path: string
+          password_hash: string
+          unique_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          encoded_image_path: string
+          file_name: string
+          file_size: number
+          id?: string
+          message: string
+          original_image_path: string
+          password_hash: string
+          unique_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          encoded_image_path?: string
+          file_name?: string
+          file_size?: number
+          id?: string
+          message?: string
+          original_image_path?: string
+          password_hash?: string
+          unique_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
