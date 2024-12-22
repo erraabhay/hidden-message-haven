@@ -23,27 +23,42 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">
-            stego<span className="text-primary">X</span>
+          <h1 className="text-4xl font-bold text-white" style={{ textShadow: '2px 2px 0px #FF6B6B, 4px 4px 0px #4ECDC4' }}>
+            stego<span className="text-[#FF6B6B]">X</span>
           </h1>
-          <Button variant="outline" onClick={handleLogout}>
+          <Button variant="outline" onClick={handleLogout} className="bg-white/90 hover:bg-white border-2 border-[#FF6B6B] text-[#FF6B6B] font-bold">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
         </div>
 
         <Tabs defaultValue="encode" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="encode">Encode</TabsTrigger>
-            <TabsTrigger value="decode">Decode</TabsTrigger>
-            <TabsTrigger value="search">Search</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-white/90 p-1 gap-1">
+            <TabsTrigger 
+              value="encode" 
+              className="data-[state=active]:bg-[#FF6B6B] data-[state=active]:text-white"
+            >
+              Encode
+            </TabsTrigger>
+            <TabsTrigger 
+              value="decode"
+              className="data-[state=active]:bg-[#4ECDC4] data-[state=active]:text-white"
+            >
+              Decode
+            </TabsTrigger>
+            <TabsTrigger 
+              value="search"
+              className="data-[state=active]:bg-[#FF6B6B] data-[state=active]:text-white"
+            >
+              Search
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="encode">
-            <Card>
+            <Card className="border-4 border-[#FF6B6B] bg-white/90">
               <CardContent className="space-y-4 pt-6">
                 <EncodeTab />
               </CardContent>
@@ -51,7 +66,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="decode">
-            <Card>
+            <Card className="border-4 border-[#4ECDC4] bg-white/90">
               <CardContent className="space-y-4 pt-6">
                 <DecodeTab />
               </CardContent>
@@ -59,7 +74,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="search">
-            <Card>
+            <Card className="border-4 border-[#FF6B6B] bg-white/90">
               <CardContent className="space-y-4 pt-6">
                 <SearchTab />
               </CardContent>
@@ -67,7 +82,7 @@ const Index = () => {
           </TabsContent>
         </Tabs>
 
-        <footer className="text-center text-sm text-muted-foreground mt-8">
+        <footer className="text-center text-sm text-white mt-8">
           © {new Date().getFullYear()} stegoX. All rights reserved.
         </footer>
       </div>
