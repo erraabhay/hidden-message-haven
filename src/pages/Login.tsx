@@ -3,8 +3,9 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Shield, Lock, Search, Image } from "lucide-react";
+import { Shield, Lock, Search, Image, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     };
     
@@ -21,7 +22,7 @@ const Login = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -29,65 +30,83 @@ const Login = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] relative overflow-hidden">
-      {/* Retro Grid Background */}
+    <div className="min-h-screen bg-gradient-to-br from-[#9b87f5] to-[#D946EF] relative overflow-hidden">
+      {/* Modern Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
       
+      <Button
+        variant="ghost"
+        onClick={() => navigate("/")}
+        className="absolute top-4 left-4 text-white hover:text-white/80"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Home
+      </Button>
+
       <div className="container mx-auto px-4 py-8 relative">
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
             <Shield className="h-16 w-16 text-white animate-pulse mr-4" />
-            <h1 className="text-6xl font-bold text-white" style={{ textShadow: '3px 3px 0px #FF6B6B, 6px 6px 0px #4ECDC4' }}>
-              stego<span className="text-[#FF6B6B]">X</span>
+            <h1 className="text-6xl font-bold text-white" style={{ 
+              textShadow: '0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.3)' 
+            }}>
+              stego<span className="bg-clip-text text-transparent bg-gradient-to-r from-[#F97316] to-[#D946EF]">X</span>
             </h1>
           </div>
-          <h2 className="text-4xl font-bold mb-4 text-white" style={{ textShadow: '2px 2px 0px #FF6B6B' }}>
-            Secure Your Messages with Advanced Steganography
+          <h2 className="text-4xl font-bold mb-4 text-white" style={{ 
+            textShadow: '0 0 10px rgba(255,255,255,0.3)' 
+          }}>
+            Welcome Back to the Future of Privacy
           </h2>
-          <p className="text-white text-xl max-w-2xl mx-auto">
-            Hide your confidential messages within images using cutting-edge steganography techniques.
-            Protect your privacy with military-grade encryption.
+          <p className="text-white/90 text-xl max-w-2xl mx-auto">
+            Sign in to continue your journey with advanced steganography
           </p>
         </div>
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="p-6 hover:shadow-neon transition-all duration-300 bg-white/90 border-4 border-[#FF6B6B]">
-            <div className="flex flex-col items-center text-center">
-              <Image className="h-12 w-12 text-[#FF6B6B] mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#FF6B6B]">Encode</h3>
-              <p className="text-gray-700">
-                Seamlessly hide your messages within images using advanced steganography
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 transform transition-all hover:scale-105">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-4 bg-gradient-to-br from-[#9b87f5] to-[#D946EF] rounded-full">
+                <Image className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Encode</h3>
+              <p className="text-white/80">
+                Hide messages within images using advanced steganography
               </p>
             </div>
-          </Card>
-          <Card className="p-6 hover:shadow-neon transition-all duration-300 bg-white/90 border-4 border-[#4ECDC4]">
-            <div className="flex flex-col items-center text-center">
-              <Lock className="h-12 w-12 text-[#4ECDC4] mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#4ECDC4]">Decode</h3>
-              <p className="text-gray-700">
-                Securely extract hidden messages with password protection
+          </div>
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 transform transition-all hover:scale-105">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-4 bg-gradient-to-br from-[#9b87f5] to-[#D946EF] rounded-full">
+                <Lock className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Decode</h3>
+              <p className="text-white/80">
+                Extract hidden messages with password protection
               </p>
             </div>
-          </Card>
-          <Card className="p-6 hover:shadow-neon transition-all duration-300 bg-white/90 border-4 border-[#FF6B6B]">
-            <div className="flex flex-col items-center text-center">
-              <Search className="h-12 w-12 text-[#FF6B6B] mb-4" />
-              <h3 className="text-xl font-bold mb-2 text-[#FF6B6B]">Search</h3>
-              <p className="text-gray-700">
+          </div>
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 transform transition-all hover:scale-105">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-4 bg-gradient-to-br from-[#9b87f5] to-[#D946EF] rounded-full">
+                <Search className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white">Search</h3>
+              <p className="text-white/80">
                 Easily manage and find your encoded messages
               </p>
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Auth Section */}
         <div className="max-w-md mx-auto">
-          <Card className="p-8 bg-white/90 border-4 border-[#4ECDC4] shadow-neon">
+          <Card className="p-8 bg-white/10 backdrop-blur-lg border-0">
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold mb-2 text-[#4ECDC4]">Welcome to stegoX</h2>
-              <p className="text-gray-700">
+              <h2 className="text-2xl font-bold mb-2 text-white">Welcome to stegoX</h2>
+              <p className="text-white/80">
                 Sign in or create an account to get started
               </p>
             </div>
@@ -98,8 +117,8 @@ const Login = () => {
                 variables: {
                   default: {
                     colors: {
-                      brand: '#4ECDC4',
-                      brandAccent: '#FF6B6B',
+                      brand: '#9b87f5',
+                      brandAccent: '#D946EF',
                     },
                   },
                 },
