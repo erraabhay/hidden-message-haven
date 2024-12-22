@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FileUp, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CryptoJS from 'crypto-js';
 
 export const DecodeTab = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -58,42 +59,57 @@ export const DecodeTab = () => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Extract message length first (32 bits)
-      let binaryLength = '';
-      let bitIndex = 0;
-      
-      for (let i = 0; i < data.length && bitIndex < 32; i += 4) {
-        for (let j = 0; j < 3 && bitIndex < 32; j++) {
-          binaryLength += data[i + j] & 1;
-          bitIndex++;
-        }
-      }
-
-      const messageLength = parseInt(binaryLength, 2);
       let binaryMessage = '';
-      
-      for (let i = 0; i < data.length && bitIndex < 32 + messageLength; i += 4) {
-        for (let j = 0; j < 3 && bitIndex < 32 + messageLength; j++) {
-          binaryMessage += data[i + j] & 1;
-          bitIndex++;
+      let messageLength = 0;
+      let index = 0;
+
+      // First, get the message length (first 32 bits)
+      for (let i = 0; i < 32; i++) {
+        const pixelIndex = i * 4;
+        const bit = data[pixelIndex] & 1;
+        binaryMessage += bit;
+      }
+      messageLength = parseInt(binaryMessage, 2) * 8;
+      binaryMessage = '';
+
+      // Then get the actual message
+      for (let i = 32; i < 32 + messageLength; i++) {
+        const pixelIndex = i * 4;
+        if (pixelIndex < data.length) {
+          const bit = data[pixelIndex] & 1;
+          binaryMessage += bit;
+          index++;
         }
       }
 
       // Convert binary to text
-      const message = binaryMessage.match(/.{8}/g)?.map(byte => 
-        String.fromCharCode(parseInt(byte, 2))
-      ).join('');
+      let message = '';
+      for (let i = 0; i < binaryMessage.length; i += 8) {
+        const byte = binaryMessage.substr(i, 8);
+        const charCode = parseInt(byte, 2);
+        message += String.fromCharCode(charCode);
+      }
 
-      if (message) {
-        setDecodedMessage(message);
-        toast({
-          title: "Success",
-          description: "Message decoded successfully!",
-        });
-      } else {
+      // Decrypt the message
+      try {
+        const decrypted = CryptoJS.AES.decrypt(message, password).toString(CryptoJS.enc.Utf8);
+        if (decrypted) {
+          setDecodedMessage(decrypted);
+          toast({
+            title: "Success",
+            description: "Message decoded successfully!",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Invalid password or corrupted message",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
         toast({
           title: "Error",
-          description: "No message found in image",
+          description: "Failed to decrypt message. Invalid password or corrupted data.",
           variant: "destructive",
         });
       }
@@ -146,13 +162,13 @@ export const DecodeTab = () => {
 
       <Button className="w-full" onClick={decodeMessage} disabled={loading}>
         <Lock className="mr-2 h-4 w-4" />
-        Decode Message
+        {loading ? "Decoding..." : "Decode Message"}
       </Button>
 
       {decodedMessage && (
         <div className="p-4 bg-secondary rounded-lg">
           <Label>Decoded Message:</Label>
-          <p className="mt-2">{decodedMessage}</p>
+          <p className="mt-2 whitespace-pre-wrap">{decodedMessage}</p>
         </div>
       )}
     </div>
