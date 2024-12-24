@@ -28,7 +28,12 @@ export const SearchTab = () => {
     }
 
     setLoading(true);
+    setOriginalPreview(null);
+    setEncodedImage(null);
+    setMessage("");
+
     try {
+      console.log("Searching with key:", searchKey);
       const { data, error } = await supabase
         .from('stego_data')
         .select()
@@ -36,8 +41,26 @@ export const SearchTab = () => {
         .eq('password_hash', crypto.SHA256(searchPassword).toString())
         .single();
 
-      if (error) throw error;
-      if (!data) throw new Error('No data found');
+      if (error) {
+        console.error('Search error:', error);
+        toast({
+          title: "Error",
+          description: "Invalid unique key or password",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!data) {
+        toast({
+          title: "Error",
+          description: "No data found with provided key and password",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Found stego data:", data);
 
       // Get image URLs
       const { data: originalUrl } = supabase.storage
@@ -60,7 +83,7 @@ export const SearchTab = () => {
       console.error('Search error:', error);
       toast({
         title: "Error",
-        description: "Failed to find data with provided key and password",
+        description: "Invalid unique key or password",
         variant: "destructive",
       });
     } finally {
@@ -93,7 +116,7 @@ export const SearchTab = () => {
 
       <Button className="w-full" onClick={searchStegoData} disabled={loading}>
         <Search className="mr-2 h-4 w-4" />
-        Search
+        {loading ? "Searching..." : "Search"}
       </Button>
 
       <ImagePreview

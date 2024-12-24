@@ -11,6 +11,7 @@ export const DecodeTab = () => {
   const [password, setPassword] = useState("");
   const [decodedMessage, setDecodedMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -31,6 +32,7 @@ export const DecodeTab = () => {
               ctx.drawImage(img, 0, 0);
             }
           }
+          setImagePreview(img.src);
         };
         img.src = e.target?.result as string;
       };
@@ -51,17 +53,20 @@ export const DecodeTab = () => {
     setLoading(true);
     try {
       const canvas = canvasRef.current;
-      if (!canvas) return;
+      if (!canvas) {
+        throw new Error("Canvas not initialized");
+      }
 
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        throw new Error("Could not get canvas context");
+      }
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
       let binaryMessage = '';
       let messageLength = 0;
-      let index = 0;
 
       // First, get the message length (first 32 bits)
       for (let i = 0; i < 32; i++) {
@@ -70,6 +75,11 @@ export const DecodeTab = () => {
         binaryMessage += bit;
       }
       messageLength = parseInt(binaryMessage, 2) * 8;
+      
+      if (messageLength <= 0 || messageLength > data.length) {
+        throw new Error("Invalid message length detected");
+      }
+
       binaryMessage = '';
 
       // Then get the actual message
@@ -78,7 +88,6 @@ export const DecodeTab = () => {
         if (pixelIndex < data.length) {
           const bit = data[pixelIndex] & 1;
           binaryMessage += bit;
-          index++;
         }
       }
 
@@ -93,23 +102,19 @@ export const DecodeTab = () => {
       // Decrypt the message
       try {
         const decrypted = CryptoJS.AES.decrypt(message, password).toString(CryptoJS.enc.Utf8);
-        if (decrypted) {
-          setDecodedMessage(decrypted);
-          toast({
-            title: "Success",
-            description: "Message decoded successfully!",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "Invalid password or corrupted message",
-            variant: "destructive",
-          });
+        if (!decrypted) {
+          throw new Error("Incorrect password");
         }
+        setDecodedMessage(decrypted);
+        toast({
+          title: "Success",
+          description: "Message decoded successfully!",
+        });
       } catch (error) {
+        console.error("Decryption error:", error);
         toast({
           title: "Error",
-          description: "Failed to decrypt message. Invalid password or corrupted data.",
+          description: "Incorrect password or corrupted message",
           variant: "destructive",
         });
       }
@@ -117,7 +122,7 @@ export const DecodeTab = () => {
       console.error('Decoding error:', error);
       toast({
         title: "Error",
-        description: "Failed to decode message",
+        description: error.message || "Failed to decode message",
         variant: "destructive",
       });
     } finally {
@@ -148,6 +153,13 @@ export const DecodeTab = () => {
           </Button>
         </div>
       </div>
+
+      {imagePreview && (
+        <div className="mt-4">
+          <Label>Selected Image</Label>
+          <img src={imagePreview} alt="Selected" className="mt-2 max-w-full h-auto rounded-lg" />
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="decode-password">Password</Label>
