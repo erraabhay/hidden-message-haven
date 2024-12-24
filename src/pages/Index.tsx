@@ -2,10 +2,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { EncodeTab } from "@/components/EncodeTab";
-import { DecodeTab } from "@/components/DecodeTab";
-import { SearchTab } from "@/components/SearchTab";
+import { useToast } from "@/components/ui/use-toast";
+import EncodeTab from "@/components/EncodeTab";
+import DecodeTab from "@/components/DecodeTab";
+import SearchTab from "@/components/SearchTab";
 import { LogOut } from "lucide-react";
 
 const Index = () => {
