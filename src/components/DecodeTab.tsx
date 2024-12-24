@@ -65,24 +65,28 @@ export const DecodeTab = () => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      let binaryMessage = '';
-      let messageLength = 0;
-
-      // First, get the message length (first 32 bits)
+      // Get message length from first 32 bits
+      let binaryLength = '';
       for (let i = 0; i < 32; i++) {
         const pixelIndex = i * 4;
         const bit = data[pixelIndex] & 1;
-        binaryMessage += bit;
+        binaryLength += bit;
       }
-      messageLength = parseInt(binaryMessage, 2) * 8;
       
-      if (messageLength <= 0 || messageLength > data.length) {
-        throw new Error("Invalid message length detected");
+      const messageLength = parseInt(binaryLength, 2) * 8;
+      console.log("Detected message length:", messageLength);
+
+      // Validate message length
+      if (messageLength <= 0) {
+        throw new Error("No hidden message detected in this image");
+      }
+      
+      if (messageLength > (data.length - 128)) { // Leave space for header
+        throw new Error("Invalid message length - the image appears to be corrupted");
       }
 
-      binaryMessage = '';
-
-      // Then get the actual message
+      let binaryMessage = '';
+      // Extract the message bits
       for (let i = 32; i < 32 + messageLength; i++) {
         const pixelIndex = i * 4;
         if (pixelIndex < data.length) {
@@ -99,7 +103,7 @@ export const DecodeTab = () => {
         message += String.fromCharCode(charCode);
       }
 
-      // Decrypt the message
+      // Attempt to decrypt
       try {
         const decrypted = CryptoJS.AES.decrypt(message, password).toString(CryptoJS.enc.Utf8);
         if (!decrypted) {
@@ -118,13 +122,14 @@ export const DecodeTab = () => {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Decoding error:', error);
       toast({
         title: "Error",
         description: error.message || "Failed to decode message",
         variant: "destructive",
       });
+      setDecodedMessage("");
     } finally {
       setLoading(false);
     }
@@ -172,7 +177,11 @@ export const DecodeTab = () => {
         />
       </div>
 
-      <Button className="w-full" onClick={decodeMessage} disabled={loading}>
+      <Button 
+        className="w-full" 
+        onClick={decodeMessage} 
+        disabled={loading || !selectedImage || !password}
+      >
         <Lock className="mr-2 h-4 w-4" />
         {loading ? "Decoding..." : "Decode Message"}
       </Button>
