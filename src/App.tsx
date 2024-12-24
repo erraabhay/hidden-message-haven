@@ -56,6 +56,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          {/* Catch all other routes and redirect to landing page */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
