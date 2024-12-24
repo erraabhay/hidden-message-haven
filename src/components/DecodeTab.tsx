@@ -8,7 +8,6 @@ import CryptoJS from 'crypto-js';
 
 export const DecodeTab = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [decodedMessage, setDecodedMessage] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,6 @@ export const DecodeTab = () => {
               ctx.drawImage(img, 0, 0);
             }
           }
-          setImagePreview(img.src);
         };
         img.src = e.target?.result as string;
       };
@@ -63,6 +61,7 @@ export const DecodeTab = () => {
 
       let binaryMessage = '';
       let messageLength = 0;
+      let index = 0;
 
       // First, get the message length (first 32 bits)
       for (let i = 0; i < 32; i++) {
@@ -79,6 +78,7 @@ export const DecodeTab = () => {
         if (pixelIndex < data.length) {
           const bit = data[pixelIndex] & 1;
           binaryMessage += bit;
+          index++;
         }
       }
 
@@ -126,11 +126,11 @@ export const DecodeTab = () => {
   };
 
   return (
-    <div className="space-y-4 bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] p-6 rounded-lg shadow-neon">
+    <div className="space-y-4">
       <canvas ref={canvasRef} className="hidden" />
       
       <div className="space-y-2">
-        <Label htmlFor="decode-image" className="text-white font-bold text-xl">Upload Image</Label>
+        <Label htmlFor="decode-image">Upload Image</Label>
         <div className="flex items-center gap-4">
           <Input
             id="decode-image"
@@ -141,7 +141,7 @@ export const DecodeTab = () => {
           />
           <Button
             onClick={() => document.getElementById("decode-image")?.click()}
-            className="w-full bg-[#FF6B6B] hover:bg-[#FF8787] text-white font-bold"
+            className="w-full"
           >
             <FileUp className="mr-2 h-4 w-4" />
             Select Image to Decode
@@ -149,37 +149,26 @@ export const DecodeTab = () => {
         </div>
       </div>
 
-      {imagePreview && (
-        <div className="mt-4">
-          <img src={imagePreview} alt="Selected" className="max-w-full h-auto rounded-lg border-4 border-[#4ECDC4]" />
-        </div>
-      )}
-
       <div className="space-y-2">
-        <Label htmlFor="decode-password" className="text-white font-bold text-xl">Password</Label>
+        <Label htmlFor="decode-password">Password</Label>
         <Input
           id="decode-password"
           type="password"
           placeholder="Enter password to decode"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="bg-white/90 border-[#4ECDC4]"
         />
       </div>
 
-      <Button 
-        className="w-full bg-[#4ECDC4] hover:bg-[#2FB8AC] text-white font-bold" 
-        onClick={decodeMessage} 
-        disabled={loading}
-      >
+      <Button className="w-full" onClick={decodeMessage} disabled={loading}>
         <Lock className="mr-2 h-4 w-4" />
         {loading ? "Decoding..." : "Decode Message"}
       </Button>
 
       {decodedMessage && (
-        <div className="p-4 bg-white/90 rounded-lg border-4 border-[#FF6B6B]">
-          <Label className="text-[#FF6B6B] font-bold text-xl">Decoded Message:</Label>
-          <p className="mt-2 whitespace-pre-wrap text-gray-800">{decodedMessage}</p>
+        <div className="p-4 bg-secondary rounded-lg">
+          <Label>Decoded Message:</Label>
+          <p className="mt-2 whitespace-pre-wrap">{decodedMessage}</p>
         </div>
       )}
     </div>
